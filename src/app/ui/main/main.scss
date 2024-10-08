@@ -1,0 +1,31 @@
+.gridCard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 50px;
+}
+
+.card {
+    width: 440px;
+    height: 240px;
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+}
+
+.mask {
+    display: flex;
+    align-items: flex-end;
+    border-radius: 10px;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+    background: linear-gradient(0deg, #000000d3 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.gridContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
