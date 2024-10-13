@@ -1,9 +1,9 @@
 'use server';
-import { SignupFormSchema, СheckingPost } from "../lib/definitions";
-import { createSession } from '@/app/lib/session';
+import { EntranceFormSchema, SignupFormSchema, СheckingPost } from "../lib/definitions";
+import { createSession, getToken } from '@/app/lib/session';
 import { randomBytes } from 'crypto';
 import { redirect } from "next/navigation";
-import { GetTopicCard } from "./requests";
+import { GetTopicCard, GetUser } from "./requests";
 
 const generateRandomId = (length = 16) => {
     return randomBytes(length).toString('hex');
@@ -22,6 +22,7 @@ export async function signup(state, formData) {
             errors: validatedFields.error.flatten().fieldErrors,
         }
     }
+
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
@@ -94,6 +95,11 @@ export async function signup(state, formData) {
 
 
 export async function CreatePost(state, formData) {
+    const id = generateRandomId();
+    const AllCategoty = await GetTopicCard();
+    const token = await getToken();
+    const AllUser = await GetUser();
+    const user = AllUser.find(user => user.id === token.userId);
     const FormSchema = await СheckingPost();
     const validatedFields = FormSchema.safeParse({
         category: formData.get('category'),
@@ -101,25 +107,43 @@ export async function CreatePost(state, formData) {
         title: formData.get('title'),
         text: formData.get('text'),
         image: formData.get('image'),
-        image2: formData.get('image2'),
-    })
+    });
 
     if (!validatedFields.success) {
         return {
             errors: validatedFields.error.flatten().fieldErrors,
+        };
+    }
+
+    const { category, subcategory, title, text } = validatedFields.data;
+
+    const imageFile = formData.get('image');
+
+    let imageUrl = '';
+    if (imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append('image', imageFile);
+
+        const res = await fetch('http://localhost:3000/api/upload', {
+            method: 'POST',
+            body: imageFormData,
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            imageUrl = data.fileUrl;
+        } else {
+            return { errors: { image: 'Ошибка загрузки изображения' } };
         }
     }
-    const { category, subcategory, title, text, image2 } = validatedFields.data;
-    console.log(1, 2, 4, image2)
-    const id = generateRandomId();
+
+
     const PostInfo = {
         id: id,
         title: title,
         text: text,
-        image: image2,
-    }
-
-    const AllCategoty = await GetTopicCard();
+        image: imageUrl,
+    };
 
     AllCategoty[category].forEach(category => {
         if (category.name === subcategory) {
@@ -127,16 +151,73 @@ export async function CreatePost(state, formData) {
         }
     });
 
-    fetch("http://localhost:4000/categories", {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(AllCategoty)
-    })
-        .then(response => response.json())
-        .then(data => console.log('Success'))
-        .catch(error => console.error('Error:', error));
+    user.posts.push(PostInfo);
+    const userId = user.id;
+
+    try {
+        const res = await fetch(`http://localhost:4000/user/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+        })
+        if (res.ok) {
+            console.log('Success user')
+        }
+    } catch (e) {
+        console.error('Error user:', e)
+    }
+
+
+    try {
+        const res = await fetch("http://localhost:4000/categories", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(AllCategoty),
+        })
+
+        if (res.ok) {
+            console.log('Success post')
+        }
+    } catch (e) {
+        console.error('Error post:', e)
+    }
 
     redirect('/profile');
+}
+
+
+
+export async function entrance(state, formData) {
+    const FormSchema = await EntranceFormSchema();
+
+    let validatedFields;
+    try {
+        validatedFields = await FormSchema.parseAsync({
+            email: formData.get('email'),
+            password: formData.get('password'),
+        });
+    } catch (error) {
+        return {
+            errors: error.errors
+        }
+    }
+    console.log('после запроса')
+    console.log(validatedFields)
+    const { email } = validatedFields;
+    console.log(email);
+
+    const data = await GetUser();
+
+    const user = data.find(item => item.email === email);
+    console.log(user);
+    if (!user) {
+        return { error: 'Пользователь не найден' };
+    }
+    await createSession(user.id);
+    redirect('/main');
+
 }

@@ -1,14 +1,7 @@
-import { Button } from 'antd';
-import Link from 'next/link';
+import HiPage from "./ui/hi_page/hi_page";
 
 export default function Home() {
-
-  
   return (
-    <>
-      <h1>Привет</h1>
-      <Link href='/main'><Button type="primary">Primary Button</Button></Link>
-    </>
-
+    <HiPage />
   );
 }

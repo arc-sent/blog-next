@@ -4,10 +4,14 @@ import './registration_from.scss';
 import Logo2 from '../../image/Logo2.png';
 import { useFormState, useFormStatus } from 'react-dom'
 import { signup } from '@/app/actions/auth';
+import Link from 'next/link';
+import { useEffect } from 'react';
 export default function RegistrationFrom() {
 
     const [state, action] = useFormState(signup, undefined);
-
+    useEffect(() => {
+        console.log(state)
+    }, [state, action])
     return (
         <div className="wrapper-form">
             <form className='form-registration' action={action}>
@@ -41,6 +45,8 @@ export default function RegistrationFrom() {
                 )}
 
                 <button>Зарегестрироваться</button>
+
+                <Link href='/entrance'>У вас уже есть аккаунт</Link>
             </form>
         </div>
     )

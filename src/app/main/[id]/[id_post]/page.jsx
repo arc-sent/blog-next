@@ -1,5 +1,5 @@
+import PageId from "@/app/ui/page_id/page_id";
 import { GetTopicCard } from "../../../actions/requests";
-import '../id_style.scss';
 export default async function PageIdPost({ params }) {
     const { id_post } = params;
     const posts = await GetTopicCard();
@@ -13,9 +13,6 @@ export default async function PageIdPost({ params }) {
         InfoCard = CategoryPosts.find(item => item.id == params.id) || InfoCard
     })
     return (
-        <div className="page_id_post">
-            <h1>{InfoPosts.title}</h1>
-            <p>{InfoPosts.text}</p>
-        </div>
+        <PageId InfoPosts = {InfoPosts}/>
     )
 }

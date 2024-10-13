@@ -68,9 +68,35 @@ export function СheckingPost() {
             }, {
                 message: 'Файл должен быть объектом File с допустимым форматом (.jpeg или .png) и не более 5MB.',
             }),
-        image2: z.string().trim()
     })
 
 }
 
+export async function EntranceFormSchema() {
+    const user = await GetUser();
+
+    return z.object({
+        email: z
+            .string()
+            .email({ message: 'Пожалуйста, введите правильный адрес электронной почты.' })
+            .trim()
+            .refine((email) => {
+                return user.some((obj) => obj.email === email);
+            }, {
+                message: 'Такая почта не зарегистрирована!',
+            }),
+        password: z
+            .string()
+            .min(5, { message: 'В пароле должно быть минимум 5 символов.' })
+            .regex(/[a-zA-Z]/, { message: 'Пароль должен содержать хотя бы одну букву.' })
+            .regex(/[0-9]/, { message: 'Пароль должен содержать хотя бы одну цифру.' })
+            .transform((val) => val.trim()),
+    }).refine(async (data) => {
+        const email = data.email;
+        const user2 = user.find((obj) => obj.email === email);
+        return user2 && user2.password === data.password;
+    }, {
+        message: 'Неверный пароль!',
+    });
+}
 

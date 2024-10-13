@@ -2,6 +2,7 @@ import './profile_component.scss';
 import { FaBookBookmark } from "react-icons/fa6";
 import CardPost from "@/app/ui/card_component/card_post";
 import Link from 'next/link';
+import WrapperButton from './wrapper_button';
 
 export default function ProfileComponent({ user }) {
     return (
@@ -11,7 +12,7 @@ export default function ProfileComponent({ user }) {
 
                 <div className="main-info-block">
                     <h1>{user.name}</h1>
-                    <Link href = '/profile/create'><button>Создать статью</button></Link>
+                    <WrapperButton />
                 </div>
 
             </div>
@@ -25,7 +26,7 @@ export default function ProfileComponent({ user }) {
                 <div className='grid-container'>
                     {
                         user.posts.map(post => {
-                            return <Link href={`/main/${post.id}`} key={post.id} style={{ textDecoration: 'none' }}><CardPost post={post} /></Link>
+                            return <Link href={`/profile/${post.id}`} key={post.id} style={{ textDecoration: 'none' }}><CardPost post={post} /></Link>
                         })
                     }
                 </div>

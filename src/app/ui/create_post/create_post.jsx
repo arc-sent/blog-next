@@ -1,27 +1,12 @@
 'use client';
 import './create_post.scss';
-import { useState } from "react";
-import { useFormState, useFormStatus } from 'react-dom'
+import { useState  } from "react";
+import { useFormState } from 'react-dom'
 import { CreatePost } from '@/app/actions/auth';
 export default function CreateForm() {
     const [selectedCategory, setSelectedCategory] = useState('');
-    const [image, setImage] = useState(null);
     const [subCategories, setSubCategories] = useState(["Rolls-Royce", "Bentley", "Ferrari", "Lamborghini", "Porsche", "Tesla"]);
     const [state, action] = useFormState(CreatePost, undefined);
-
-    function handleFileChange(e) {
-        const file = e.target.files[0];
-        const render = new FileReader();
-        render.readAsDataURL(file);
-
-        render.onload = () => {
-            setImage(render.result);
-        }
-
-        render.onerror = () => {
-            console.log(render.error);
-        }
-    };
 
     function handleCategoryChange(e) {
         const category = e.target.value;
@@ -86,8 +71,7 @@ export default function CreateForm() {
 
                 <div>
                     <label htmlFor="image">Обложка</label>
-                    <input type="file" name='image' accept=".jpg, .jpeg, .png" onChange={handleFileChange} />
-                    <input defaultValue={image || ''} name='image2' />
+                    <input type="file" name='image' accept=".jpg, .jpeg, .png" />
                 </div>
 
                 {state?.errors?.image && <p>{state.errors.image}</p>}

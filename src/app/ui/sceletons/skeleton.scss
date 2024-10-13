@@ -1,0 +1,8 @@
+.wrapper_skeleton{
+    margin-top: 25px;
+}
+.grid_skeleton {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 50px;
+}

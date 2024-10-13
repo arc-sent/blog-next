@@ -5,11 +5,11 @@ export default function WrapperCard({ posts, query, category }) {
     const filteredPosts = query ? posts.filter(item => item.name.includes(query)) : posts;
 
     return (
-        <div style={filteredPosts.length > 0 ? { marginTop: '25px' } : undefined}>
+        <div style={filteredPosts.length > 0 ? { marginTop: '25px' } : undefined} className='wrapp'>
             {
                 filteredPosts.length > 0 &&
                 <>
-                    <h2 style={{ margin: '15px 0px', fontSize: '25px', color: "rgb(32, 32, 34)" }}>{category}</h2>
+                    <h2>{category}</h2>
                     <div className='gridCard'>
                         {
                             filteredPosts.map(item => {

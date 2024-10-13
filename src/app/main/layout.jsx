@@ -14,7 +14,7 @@ export default function LayoutMain({ children }) {
         <Layout>
             <HeaderLayout cook={token}/>
             <ContentLayout>{children}</ContentLayout>
-            <FooterLayout>Footer</FooterLayout>
+            <FooterLayout cook={token}/>
         </Layout>
 
     )
